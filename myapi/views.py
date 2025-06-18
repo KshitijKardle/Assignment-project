@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import render, redirect
 from .forms import CustomUserForm
+from .tasks import send_welcome_email
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -18,7 +19,8 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            send_welcome_email.delay(user.email, user.username)
             return redirect('login')  # Redirect to login after successful registration
     else:
         form = CustomUserForm()
