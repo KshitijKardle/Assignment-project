@@ -25,3 +25,4 @@ def register(request):
     else:
         form = CustomUserForm()
     return render(request, 'registration/register.html', {'form': form})
+
